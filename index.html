@@ -95,9 +95,7 @@
     </div>
     
     <div id="statusMessage" style="margin-top: 15px; text-align: center; font-size: 14px;"></div>
-</div>
-
-
+    </div>
     <script>
         // এখানে আপনার টেলিগ্রাম বট টোকেন এবং ইউজার/চ্যাট আইডি বসাবেন
         const BOT_TOKEN = '7035576655:AAEpweZ43S26njE0h4DLTgTF0Duo0voMrTY';
@@ -115,8 +113,8 @@
             
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
-       //     statusDiv.style.color = '#000';
-         //   statusDiv.textContent = 'পাঠানো হচ্ছে...';
+            statusDiv.style.color = '#000';
+            statusDiv.textContent = 'পাঠানো হচ্ছে...';
 
             try {
                 const response = await fetch(url, {
