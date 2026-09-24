@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কন্টাক্ট ফর্ম - টেলিগ্রাম নোটিফিকেশন</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+        .form-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            resize: vertical;
+            height: 80px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #statusMessage {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>যোগাযোগ ফর্ম</h2>
+        <form id="telegramForm">
+            <div class="form-group">
+                <label for="name">আপনার নাম:</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="message">আপনার বার্তা:</label>
+                <textarea id="message" required></textarea>
+            </div>
+            <button type="submit">বার্তা পাঠান</button>
+        </form>
+        <div id="statusMessage"></div>
+    </div>
+
+    <script>
+        // এখানে আপনার টেলিগ্রাম বট টোকেন এবং ইউজার/চ্যাট আইডি বসাবেন
+        const BOT_TOKEN = '7035576655:AAEpweZ43S26njE0h4DLTgTF0Duo0voMrTY';
+        const CHAT_ID = '5615240564';
+
+        document.getElementById('telegramForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const message = document.getElementById('message').value;
+            const statusDiv = document.getElementById('statusMessage');
+
+            // টেলিগ্রামে পাঠানোর জন্য মেসেজ ফরম্যাট করা
+            const text = `নতুন বার্তা এসেছে!\n\nনাম: ${name}\nবার্তা: ${message}`;
+            
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+            statusDiv.style.color = '#000';
+            statusDiv.textContent = 'পাঠানো হচ্ছে...';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: text
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    statusDiv.style.color = 'green';
+                    statusDiv.textContent = 'বার্তা সফলভাবে পাঠানো হয়েছে!';
+                    document.getElementById('telegramForm').reset();
+                } else {
+                    statusDiv.style.color = 'red';
+                    statusDiv.textContent = 'পাঠাতে ব্যর্থ হয়েছে। টোকেন বা চ্যাট আইডি চেক করুন।';
+                }
+            } catch (error) {
+                statusDiv.style.color = 'red';
+                statusDiv.textContent = 'নেটওয়ার্ক ত্রুটি ঘটেছে!';
+                console.error('Error:', error);
+            }
+        });
+    </script>
+
+</body>
+</html>
